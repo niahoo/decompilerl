@@ -9,7 +9,7 @@ defmodule Decompilerl.CLI do
   end
 
   def parse_args(args) do
-    opts = 
+    opts =
       OptionParser.parse(args, switches: @switches, aliases: @aliases)
 
     case opts do
@@ -23,7 +23,7 @@ defmodule Decompilerl.CLI do
     IO.puts """
     Decompilerl
 
-    usage: decompierl <beam_file> [-o <erl_file> | --output=<erl_file>]
+    usage: decompilerl <beam_file> [-o <erl_file> | --output=<erl_file>]
     """
   end
 

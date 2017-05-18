@@ -1,14 +1,20 @@
 defmodule Decompilerl do
 
   def decompile(module, device \\ :stdio) do
-    obtain_beam(module)
-    |> do_decompile
-    |> write_to(device)
+    with {:ok, beam} <- obtain_beam(module),
+         code <- do_decompile(beam) do
+           {:ok, code}
+         end
+    |> output(device)
   end
 
   defp obtain_beam(module) when is_atom(module) do
-    {^module, beam, _file} = :code.get_object_code(module)
-    beam
+    IO.puts "Retrieving code for #{module}"
+    case :code.get_object_code(module) do
+      {^module, beam, _file} -> {:ok, beam}
+      :error -> {:error, {:could_not_obtain_beam, module}}
+      other -> other
+    end
   end
 
   defp obtain_beam(module) when is_binary(module) do
@@ -20,6 +26,15 @@ defmodule Decompilerl do
       :beam_lib.chunks(beam_code, [:abstract_code])
 
     :erl_prettypr.format(:erl_syntax.form_list(ac))
+  end
+
+  defp output({:ok, code}, device),
+    do: write_to(code, device)
+
+  defp output(other, device) do
+    IO.puts """
+      Error: #{inspect other}
+    """
   end
 
   defp write_to(code, :stdio) do
