@@ -8,9 +8,9 @@ defmodule Decompilerl.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      description: "Decompile Elixir modules to Erlang abstract code",
-     package: package,
-     escript: escript,
-     deps: deps]
+     package: package(),
+     escript: escript(),
+     deps: deps()]
   end
 
   defp escript do
