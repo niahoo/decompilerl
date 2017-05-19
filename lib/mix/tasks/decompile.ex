@@ -7,15 +7,11 @@ defmodule Mix.Tasks.Decompile do
   @manifest "decompile"
 
   def run(argv) do
-    IO.puts "Decompiling"
-
-    ensure_project_path()
-
+    Mix.Task.run "compile"
     {opts, modules} =
       argv
       |> OptionParser.parse!(switches: [output: :string], aliases: [o: :output])
     device = Keyword.get(opts, :output, :stdio)
-    IO.puts "Writing to #{device}"
     case modules do
       [module] ->
         module
@@ -33,21 +29,6 @@ defmodule Mix.Tasks.Decompile do
       "Elixir." <> module_name
     end
     |> String.to_atom()
-  end
-
-  defp ensure_project_path() do
-    # For some reason, the main project is not included in the code path with
-    # this task
-    project_paths =
-      if Mix.Project.umbrella? do
-        Mix.Project.apps_paths()
-        |> Enum.map(&elem(&1, 1))
-      else
-        [Mix.Project.app_path()]
-      end
-      |> Enum.map(& &1 <> "/ebin")
-      |> Enum.map(&String.to_charlist/1)
-      |> :code.add_pathsz()
   end
 
   defp usage() do
